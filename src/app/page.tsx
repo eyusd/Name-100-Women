@@ -1,113 +1,112 @@
-import Image from "next/image";
+"use client";
+
+import InputForm from "@/components/input-form";
+import ListOfAnswers from "@/components/list-of-answers";
+import { Button } from "@/components/ui/button";
+import { useStore } from "./store";
+import { SubmitSuccess } from "./api/submit/types";
+import { displayTime } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import AnswerElement from "@/components/answer-element";
+
+function GameNotStarted() {
+
+  const { startGame } = useStore((state) => ({
+    startGame: state.startGame,
+  }));
+
+  return (
+    <div className="flex-1 flex flex-col items-center justify-around gap-4">
+      <p>
+        The goal of the game is simple : name 100 famous women.<br/>
+        There are no restriction of occupation, age, ethnicity, and you can name dead or living persons.
+        A woman is considered famous if she has a Wikipedia page that is referenced in the database. 
+        You can also add a disambiguation with parenthesis if that's needed.<br/>
+        Also, the gender of the persons have been inferred from the Wikipedia page, based on the context of the
+        words, and the pronouns used.<br/>
+        Be kind, mistakes can happen, and the game is here to have fun and learn.<br/>
+        <br/>
+        Good luck !
+      </p>
+      <Button onClick={startGame} variant="default">
+        Start
+      </Button>
+    </div>
+  );
+}
+
+function GameStarted() {
+  return (
+    <>
+      <ListOfAnswers />
+      <InputForm />
+    </>
+  );
+}
+
+function GameEnded() {
+
+  const { answers, gameStart, gameEnd, resetGame } = useStore((state) => ({
+    answers: state.answers,
+    gameStart: state.gameStart ?? Date.now(),
+    gameEnd: state.gameEnd ?? Date.now(),
+    resetGame: state.resetGame,
+  }));
+
+  const randomSelection = answers.sort(() => Math.random() - 0.5).slice(0, 3);
+
+  return (
+    <div className="flex-1 flex flex-col items-center justify-around gap-4">
+      <div className="flex flex-col">
+        <h2 className="text-2xl font-bold">Congratulations !</h2>
+        <p>{`${randomSelection.map((answer) => answer.title).join(", ")}... You completed the list !`}</p>
+        <h3 className="text-lg font-semibold">{`Your time: ${displayTime(gameEnd - gameStart)}`}</h3>
+      </div>
+
+      <div className="flex flex-row gap-4">
+        <Button onClick={resetGame} variant="default">
+          Replay
+        </Button>
+        
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="secondary">
+              List
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="h-5/6 w-5/6">
+            <DialogHeader>
+              <DialogTitle>Your answers</DialogTitle>
+            </DialogHeader>
+            <ScrollArea className="rounded-md border p-4">
+              <div className="flex flex-row flex-wrap gap-2">
+                {answers.map((answer, index) => (
+                  <div key={index}>
+                    <AnswerElement {...answer} />
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
+
+  const { gameState } = useStore((state) => ({
+    gameState: state.gameState
+  }));
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+    <main className="h-full w-full flex flex-col items-center justify-between transition-all p-4 lg:p-8 xl:px-24 xl:max-w-screen-xl">
+      <h1 className="text-4xl font-bold">Name 100 Women</h1>
+      {gameState === "not-started" && <GameNotStarted/>}
+      {gameState === "started" && <GameStarted />}
+      {gameState === "finished" && <GameEnded />}
     </main>
   );
 }
