@@ -20,12 +20,11 @@ function GameNotStarted() {
     <div className="flex-1 flex flex-col items-center justify-around gap-4">
       <p>
         The goal of the game is simple : name 100 famous women.<br/>
-        There are no restriction of occupation, age, ethnicity, and you can name dead or living persons.
+        There are no restrictions of occupation, age, ethnicity, and you can name dead or living persons.
         A woman is considered famous if she has a Wikipedia page that is referenced in the database. 
-        You can also add a disambiguation with parenthesis if that's needed.<br/>
-        Also, the gender of the persons have been inferred from the Wikipedia page, based on the context of the
-        words, and the pronouns used.<br/>
-        Be kind, mistakes can happen, and the game is here to have fun and learn.<br/>
+        You can also add a disambiguation with parenthesis if needed.<br/>
+        <i>Also, the gender of the persons have been inferred from the Wikipedia page, based on the context of the
+        words, and the pronouns used. Be kind, mistakes can happen, just have fun and learn.</i><br/>
         <br/>
         Good luck !
       </p>
@@ -54,7 +53,7 @@ function GameEnded() {
     resetGame: state.resetGame,
   }));
 
-  const randomSelection = answers.sort(() => Math.random() - 0.5).slice(0, 3);
+  const randomSelection = answers.sort(() => Math.random() - 0.5).slice(0, 5);
 
   return (
     <div className="flex-1 flex flex-col items-center justify-around gap-4">

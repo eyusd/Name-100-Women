@@ -47,8 +47,8 @@ export default function RootLayout({
             enableSystem
             themes={["light", "dark"]}
           >
-            {children}
             <Toaster />
+            {children}
           </ThemeProvider>
         </body>
     </html>
